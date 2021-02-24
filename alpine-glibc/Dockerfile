@@ -1,5 +1,5 @@
 FROM alpine:3.13.2
-LABLE author="pilgrima"
+LABEL author="pilgrima"
 ENV GLIBC_VERSION 2.33-r0
 # Download and install glibc
 RUN apk add --update curl && \
