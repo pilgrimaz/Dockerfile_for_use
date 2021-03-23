@@ -1,0 +1,14 @@
+FROM alpine:latest
+ADD libfastcommon-1.0.48.tar.gz /mnt
+ADD fastdfs-6.07.tar.gz /mnt
+RUN apk update \
+    && apk add --no-cache  gcc libc-dev make automake autoconf libtool pcre pcre-dev zlib zlib-dev openssl-dev --repository https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.6/main
+RUN cd /mnt/libfastcommon-1.0.48 && ./make.sh && ./make.sh install \
+    && cd /mnt/fastdfs-6.07 && ./make.sh && ./make.sh install \
+    && cp /etc/fdfs/tracker.conf.sample /etc/fdfs/tracker.conf \
+    && cp /etc/fdfs/storage.conf.sample /etc/fdfs/storage.conf \
+    && cp /etc/fdfs/client.conf.sample /etc/fdfs/client.conf \
+    && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/tracker|g" /etc/fdfs/tracker.conf \
+    && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/storage|g" /etc/fdfs/storage.conf \
+    && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/storage|g" /etc/fdfs/client.conf
+
