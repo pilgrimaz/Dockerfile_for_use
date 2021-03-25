@@ -2,9 +2,6 @@ FROM alpine:3.6
 
 ENV HOME /root
 ENV NGINXMODE fastdfs-nginx-module-1.22
-ENV FDFSVER fastdfs-6.07
-ENV LIBFDFSCOMVER libfastcommon-1.0.48
-
 #安装准备
 RUN apk update \
     && apk add --no-cache gcc g++ make automake autoconf libtool pcre pcre-dev zlib zlib-dev openssl-dev wget vim --repository https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.6/main
@@ -18,19 +15,19 @@ ADD fastdfs-6.07.tar.gz ${HOME}/
 ADD fastdfs-nginx-module-1.22.tar.gz ${HOME}/
 
  # 安装libfastcommon
- RUN cd ${HOME}/${LIBFDFSCOMVER}/ \
+ RUN cd ${HOME}/libfastcommon-1.0.48/ \
     && ./make.sh  \
     && ./make.sh install
 
 # 安装fastdfs
-RUN cd ${HOME}/${FDFSVER}/ \
+RUN cd ${HOME}/fastdfs-6.07/ \
     && ./make.sh \
     && ./make.sh install \
     && cp /etc/fdfs/tracker.conf.sample /etc/fdfs/tracker.conf \
     && cp /etc/fdfs/storage.conf.sample /etc/fdfs/storage.conf \
     && cp /etc/fdfs/client.conf.sample /etc/fdfs/client.conf \
-    && cp ${HOME}/${FDFSVER}/conf/http.conf /etc/fdfs/ \
-    && cp ${HOME}/${FDFSVER}/conf/mime.types /etc/fdfs/ \
+    && cp ${HOME}/fastdfs-6.07/conf/http.conf /etc/fdfs/ \
+    && cp ${HOME}/fastdfs-6.07/conf/mime.types /etc/fdfs/ \
     && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/tracker|g" /etc/fdfs/tracker.conf \
     && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/storage|g" /etc/fdfs/storage.conf \
     && sed -i "s|/home/yuqing/fastdfs|/var/local/fdfs/storage|g" /etc/fdfs/client.conf
@@ -39,18 +36,16 @@ RUN cd ${HOME}/${FDFSVER}/ \
 RUN cd ${HOME} \
     && tar -zxvf nginx-1.15.4.tar.gz  \
     && cd nginx-1.15.4/ \
-    && ./configure --add-module=${HOME}/${NGINXMODE}/src/ \
+    && ./configure --add-module=${HOME}/fastdfs-nginx-module-1.22/src/ \
     && make \
     && make install
 
 # 设置nginx和fastdfs联合环境，并配置nginx
-RUN cp ${HOME}/${NGINXMODE}/src/mod_fastdfs.conf /etc/fdfs \
-#    && sed -i "s|^store_path0.*$|store_path0=/var/local/fdfs/storage|g" /etc/fdfs/mod_fastdfs.conf \
-#    && sed -i "s|^url_have_group_name =.*$|url_have_group_name = true|g" /etc/fdfs/mod_fastdfs.conf \
-#    && cd ${HOME}/${FDFSVER}/conf/ \
-    && mkdir -p /var/local/fdfs/storage/data /var/local/fdfs/tracker; \
-    ln -s /var/local/fdfs/storage/data/ /var/local/fdfs/storage/data/M00; \
-    echo -e "\
+RUN cp ${HOME}/fastdfs-nginx-module-1.22/src/mod_fastdfs.conf /etc/fdfs \
+    && sed -i "s|^store_path0.*$|store_path0=/var/local/fdfs/storage|g" /etc/fdfs/mod_fastdfs.conf \
+    && sed -i "s|^url_have_group_name =.*$|url_have_group_name = true|g" /etc/fdfs/mod_fastdfs.conf \
+    && cd ${HOME}/fastdfs-6.07/conf/ \
+    && echo -e "\
     events {\n\
         worker_connections  1024;\n\
     }\n\
@@ -70,9 +65,30 @@ RUN cp ${HOME}/${NGINXMODE}/src/mod_fastdfs.conf /etc/fdfs \
 RUN rm -rf ${HOME}/*
 
 # 配置启动脚本，在启动时中根据环境变量替换nginx端口、fastdfs端口
+# 默认nginx端口
+ENV WEB_PORT 8888
+# 默认fastdfs端口
+ENV FDFS_PORT 22122
 
-ENV FASTDFS_BASE_PATH /var/local/fdfs
-ADD start.sh .
+
+# 创建启动脚本
+RUN     echo -e "\
+mkdir -p /var/local/fdfs/storage/data /var/local/fdfs/tracker; \n\
+ln -s /var/local/fdfs/storage/data/ /var/local/fdfs/storage/data/M00; \n\n\
+sed -i \"s/listen\ .*$/listen\ \$WEB_PORT;/g\" /usr/local/nginx/conf/nginx.conf; \n\
+sed -i \"s/http.server_port=.*$/http.server_port=\$WEB_PORT/g\" /etc/fdfs/storage.conf; \n\n\
+if [ \"\$IP\" = \"\" ]; then \n\
+    IP=`ifconfig eth0 | grep inet | awk '{print \$2}'| awk -F: '{print \$2}'`; \n\
+fi \n\
+sed -i \"s/^tracker_server\ =\ .*$/tracker_server=\$IP:\$FDFS_PORT/g\" /etc/fdfs/client.conf; \n\
+sed -i \"s/^tracker_server\ =\ .*$/tracker_server=\$IP:\$FDFS_PORT/g\" /etc/fdfs/storage.conf; \n\
+sed -i \"s/^tracker_server\ =\ .*$/tracker_server=\$IP:\$FDFS_PORT/g\" /etc/fdfs/mod_fastdfs.conf; \n\n\
+/etc/init.d/fdfs_trackerd start; \n\
+/etc/init.d/fdfs_storaged start; \n\
+/usr/local/nginx/sbin/nginx; \n\
+tail -f /usr/local/nginx/logs/access.log \
+">/start.sh \
+&& chmod u+x /start.sh
 
 # 暴露端口。改为采用host网络，不需要单独暴露端口
 # EXPOSE 80 22122

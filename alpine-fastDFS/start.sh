@@ -1,5 +1,12 @@
 #!/bin/bash
-#set -e
+if [ -n "$GROUP_NAME" ] ; then  
+
+sed -i "s|group_name =.*$|group_name=${GROUP_NAME}|g" /etc/fdfs/storage.conf
+sed -i "s|group_name=.*$|group_name=${GROUP_NAME}|g" /etc/fdfs/mod_fastdfs.conf
+
+fi 
+
+
 if [ "$1" = "monitor" ] ; then
   if [ -n "$TRACKER_SERVER" ] ; then  
     sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/client.conf
@@ -10,28 +17,33 @@ elif [ "$1" = "storage" ] ; then
   FASTDFS_MODE="storage"
   sed -i "s|store_path0.*$|store_path0=/var/local/fdfs/storage|g" /etc/fdfs/mod_fastdfs.conf
   sed -i "s|url_have_group_name =.*$|url_have_group_name = true|g" /etc/fdfs/mod_fastdfs.conf
+  if [ -n "$PORT" ] ; then  
+    sed -i "s|^storage_server_port=.*$|storage_server_port=${PORT}|g" /etc/fdfs/mod_fastdfs.conf
+  fi
+  if [ -n "$TRACKER_SERVER" ] ; then  
+    sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/storage.conf
+    sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/client.conf
+    sed -i "s|tracker_server=.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/mod_fastdfs.conf
+  else
+    IP=`ifconfig eth0 | grep inet | awk '{print \$2}'| awk -F: '{print \$2}'`;
+    sed -i "s|tracker_server =.*$|tracker_server=${IP}:22122|g" /etc/fdfs/storage.conf
+    sed -i "s|tracker_server =.*$|tracker_server=${IP}:22122|g" /etc/fdfs/client.conf
+    sed -i "s|tracker_server=.*$|tracker_server=${IP}:22122|g" /etc/fdfs/mod_fastdfs.conf
+    fi
+   if [ -n "$LISTEN_PORT" ] ; then
+     sed -i "s|listen .*$|listen ${LISTEN_PORT};|g" /usr/local/nginx/conf/nginx.conf
+     sed -i "s|http.server_port =.*$|http.server_port=${LISTEN_PORT}|g" /etc/fdfs/storage.conf
+   fi
   /usr/local/nginx/sbin/nginx
 else 
   FASTDFS_MODE="tracker"
 fi
 
+
 if [ -n "$PORT" ] ; then  
-sed -i "s|^port=.*$|port=${PORT}|g" /etc/fdfs/"$FASTDFS_MODE".conf
+sed -i "s|^port =.*$|port=${PORT}|g" /etc/fdfs/"$FASTDFS_MODE".conf
 fi
 
-if [ -n "$TRACKER_SERVER" ] ; then  
-
-sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/storage.conf
-sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/client.conf
-sed -i "s|tracker_server =.*$|tracker_server=${TRACKER_SERVER}|g" /etc/fdfs/mod_fastdfs.conf
-
-fi
-
-if [ -n "$GROUP_NAME" ] ; then  
-
-sed -i "s|group_name=.*$|group_name=${GROUP_NAME}|g" /etc/fdfs/storage.conf
-
-fi 
 
 FASTDFS_LOG_FILE="${FASTDFS_BASE_PATH}/${FASTDFS_MODE}/logs/${FASTDFS_MODE}d.log"
 PID_NUMBER="${FASTDFS_BASE_PATH}/data/fdfs_${FASTDFS_MODE}d.pid"
