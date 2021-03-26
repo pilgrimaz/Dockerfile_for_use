@@ -29,11 +29,26 @@ elif [ "$1" = "storage" ] ; then
     sed -i "s|tracker_server =.*$|tracker_server=${IP}:22122|g" /etc/fdfs/storage.conf
     sed -i "s|tracker_server =.*$|tracker_server=${IP}:22122|g" /etc/fdfs/client.conf
     sed -i "s|tracker_server=.*$|tracker_server=${IP}:22122|g" /etc/fdfs/mod_fastdfs.conf
-    fi
-   if [ -n "$LISTEN_PORT" ] ; then
-     sed -i "s|listen .*$|listen ${LISTEN_PORT};|g" /usr/local/nginx/conf/nginx.conf
-     sed -i "s|http.server_port =.*$|http.server_port=${LISTEN_PORT}|g" /etc/fdfs/storage.conf
-   fi
+  fi
+  if [ -n "$TRACKER_SERVER2" ] ; then
+    sed -i "\$a tracker_server =${TRACKER_SERVER2}" /etc/fdfs/storage.conf
+    sed -i "\$a tracker_server =${TRACKER_SERVER2}" /etc/fdfs/client.conf
+    sed -i "\$a tracker_server=${TRACKER_SERVER2}" /etc/fdfs/mod_fastdfs.conf
+  fi 
+  if [ -n "$TRACKER_SERVER3" ] ; then
+    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/storage.conf
+    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/client.conf
+    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/mod_fastdfs.conf
+  fi 
+  if [ -n "$TRACKER_SERVER4" ] ; then
+    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/storage.conf
+    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/client.conf
+    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/mod_fastdfs.conf
+  fi 
+  if [ -n "$LISTEN_PORT" ] ; then
+    sed -i "s|listen .*$|listen ${LISTEN_PORT};|g" /usr/local/nginx/conf/nginx.conf
+    sed -i "s|http.server_port =.*$|http.server_port=${LISTEN_PORT}|g" /etc/fdfs/storage.conf
+  fi
   /usr/local/nginx/sbin/nginx
 else 
   FASTDFS_MODE="tracker"
