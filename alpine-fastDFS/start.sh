@@ -36,14 +36,15 @@ elif [ "$1" = "storage" ] ; then
     sed -i "\$a tracker_server=${TRACKER_SERVER2}" /etc/fdfs/mod_fastdfs.conf
   fi 
   if [ -n "$TRACKER_SERVER3" ] ; then
-    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/storage.conf
-    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/client.conf
-    sed -i "\$a ${TRACKER_SERVER3}" /etc/fdfs/mod_fastdfs.conf
+    sed -i "\$a tracker_server =${TRACKER_SERVER3}" /etc/fdfs/storage.conf
+    sed -i "\$a tracker_server =${TRACKER_SERVER3}" /etc/fdfs/client.conf
+    sed -i "\$a tracker_server=${TRACKER_SERVER3}" /etc/fdfs/mod_fastdfs.conf
   fi 
   if [ -n "$TRACKER_SERVER4" ] ; then
-    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/storage.conf
-    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/client.conf
-    sed -i "\$a ${TRACKER_SERVER4}" /etc/fdfs/mod_fastdfs.conf
+    sed -i "\$a tracker_server =${TRACKER_SERVER4}" /etc/fdfs/storage.conf
+    sed -i "\$a tracker_server =${TRACKER_SERVER4}" /etc/fdfs/client.conf
+    sed -i "\$a tracker_server=${TRACKER_SERVER4}" /etc/fdfs/mod_fastdfs.conf
+
   fi 
   if [ -n "$LISTEN_PORT" ] ; then
     sed -i "s|listen .*$|listen ${LISTEN_PORT};|g" /usr/local/nginx/conf/nginx.conf
