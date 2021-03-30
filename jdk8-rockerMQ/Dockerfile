@@ -1,4 +1,4 @@
-FROM pilgrima/jre:v0.3
+FROM pilgrima/jdk8:latest
 ADD rocketmq.tar.gz /home/
 ENV ROCKETMQ_HOME=/home/rocketmq
 WORKDIR /home/rocketmq/bin
