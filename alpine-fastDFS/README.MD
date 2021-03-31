@@ -1,7 +1,7 @@
 #### 基于版本  
 > alpine3.6     
 > libfastcommon-1.0.48   
-> fastdfs-6.07   
+> fastdfs-6.0.7   
 > fastdfs-nginx-module-1.22 
 > nginx1.18  
 
