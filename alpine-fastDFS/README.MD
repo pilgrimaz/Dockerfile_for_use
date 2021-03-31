@@ -21,4 +21,4 @@
 3. tracker 启动一个tracker容器   
   PORT 修改trackerd的监听端口，不指定则默认为22122   
 
-1和2在启动时需指定tracker_server地址   
+
