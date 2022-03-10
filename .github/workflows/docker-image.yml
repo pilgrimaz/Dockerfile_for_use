@@ -1,4 +1,4 @@
-- name: Docker Login
+name: Docker Login
   # You may pin to the exact commit or the version.
   # uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
   uses: docker/login-action@v1.14.1
@@ -15,3 +15,20 @@
     logout: # optional, default is true
     
 
+- name: Docker Image CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: cd glibc_jdk8 && docker build . --file Dockerfile --tag pilgrima/jdk8:$(date +%s) && docekr push pilgrima/jdk8:$(date +%s)
