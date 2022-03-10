@@ -4,6 +4,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  
+uses: zenato/docker-action@master
+with:
+    username: pilgrima
+    password: xl5254382
+
 
 jobs:
 
