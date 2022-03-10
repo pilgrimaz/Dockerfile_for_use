@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: cd glibc_jdk8 && docker build . --file Dockerfile --tag pilgrima/jdk8:$(date +%s) && docker push pilgrima/jdk8:$(date +%s)
+      run: cd glibc_jdk8 && docker build . --file Dockerfile --tag pilgrima/jdk8:latest && docker push pilgrima/jdk8:latest
