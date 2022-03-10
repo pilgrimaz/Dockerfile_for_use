@@ -14,21 +14,4 @@
     # Log out from the Docker registry at the end of a job
     logout: # optional, default is true
     
-- name: Docker Image CI
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: cd glibc_jdk8 && docker build . --file Dockerfile --tag pilgrima/jdk8:$(date +%s) && docekr push pilgrima/jdk8:$(date +%s)
 
