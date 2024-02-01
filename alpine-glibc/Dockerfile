@@ -1,6 +1,6 @@
 FROM alpine:3.19.1
-LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.34-r0"
-ENV GLIBC_VERSION 2.33-r0
+LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.35-r0"
+ENV GLIBC_VERSION 2.35-r0
 # Download and install glibc
 RUN apk add --update curl && \
   curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
