@@ -32,8 +32,8 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           for file in ${ALL_CHANGED_FILES}; do
-            CHANGEFILE= `echo ${file}|awk -F"/" '{print $2}'`
-            echo "$CHANGEFILE was changed"
+            CHANGEFILE= $(echo ${file}|awk -F"/" '{print $2}')
+            echo "${CHANGEFILE} was changed"
             
           done
           
