@@ -25,6 +25,7 @@ jobs:
         # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
           with:
         #   since_last_remote_commit: true 
+            files: **
             files_ignore: .github/workflows/docker-publish.yml
       - name: List all changed files
         env:
