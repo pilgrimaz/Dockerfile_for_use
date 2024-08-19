@@ -1,6 +1,6 @@
 FROM alpine:3.19.1
-LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.35-r0"
-ENV GLIBC_VERSION 2.35-r0
+LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.35-r1"
+ENV GLIBC_VERSION 2.35-r1
 # Download and install glibc
 RUN sed -i 's/https/http/' /etc/apk/repositories && \
   apk add --update curl && \
