@@ -19,22 +19,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v44
         # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
           with:
         #   since_last_remote_commit: true 
-            files_ignore: .github/**
+            files_ignore: .github/workflows/docker-publish.yml
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           for file in ${ALL_CHANGED_FILES}; do
             CHANGEFILE=$(echo ${file}|awk -F"/" '{print $2}')
-            echo "${CHANGEFILE} was changed"
-            
+            echo "${CHANGEFILE} was changed"    
           done
           
         
