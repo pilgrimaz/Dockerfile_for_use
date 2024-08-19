@@ -26,7 +26,7 @@ jobs:
         # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
           with:
         #   since_last_remote_commit: true 
-            files_ignore: .github/*  
+            files_ignore: .github/**
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
