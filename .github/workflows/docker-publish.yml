@@ -38,12 +38,11 @@ jobs:
           docker login -u ${USERNAME} -p ${PASSWORD}
           for file in `echo ${ALL_CHANGED_FILES}|tr " " "\n" | sort |uniq`; do
             CHANGEFOLDER=$(echo ${file}|awk -F"/" '{print $1}')
-            cd ${CHANGEFOLDER}
-            VERSION=$(grep -w VERSION Dockerfile |awk -F":" '{print $2}')
+            VERSION=$(grep -w VERSION ${CHANGEFOLDER}/Dockerfile |awk -F":" '{print $2}')
             echo ${VERSION}
             IMAGENAME=$(echo pilgrima/${CHANGEFOLDER}:${VERSION})
             echo ${IMAGENAME}
-            docker buildx build -t ${IMAGENAME} .
+            docker buildx build -t ${IMAGENAME} ${CHANGEFOLDER} 
             docker push ${IMAGENAME}
             docker tag ${IMAGENAME} $(echo pilgrima/${CHANGEFOLDER}:latest)
             docker push $(echo pilgrima/${CHANGEFOLDER}:latest)
