@@ -27,13 +27,25 @@ jobs:
         #   since_last_remote_commit: true 
         #   files: **
           files_ignore: .github/**
+
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          REPOSITOY: ${{secrets.REPOSITOY}}
+          USERNAME: ${{secrets.USERNAME}}
+          PASSWORD: ${{secrets.PASSWORD}}
         run: |
+          docker login -u ${USERNAME} -p ${PASSWORD}
           for file in ${ALL_CHANGED_FILES}; do
-            CHANGEFILE=$(echo ${file}|awk -F"/" '{print $2}')
-            echo "${CHANGEFILE} was changed"    
+            CHANGEFOLDER=$(echo ${file}|awk -F"/" '{print $1}')
+            cd ${CHANGEFOLDER}
+            VERSION=$(grep -w VERSION Dockerfile |awk -F":" '{print $2}')
+            echo ${VERSION}
+            IMAGENAME=$(echo ${REPOSITORY}/${CHANGEFOLDER}:${VERSION})
+            echo ${IMAGENAME}
+            docker buildx build -t ${IMAGENAME} .
+            docker push ${IMAGENAME}
+
           done
           
         

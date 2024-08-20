@@ -1,4 +1,5 @@
 FROM alpine:3.19.1
+# VERSION:2.35-r1
 LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.35-r1"
 ENV GLIBC_VERSION 2.35-r1
 # Download and install glibc
