@@ -31,7 +31,7 @@ jobs:
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-          REPOSITOY: ${{secrets.REPOSITOY}}
+          
           USERNAME: ${{secrets.USERNAME}}
           PASSWORD: ${{secrets.PASSWORD}}
         run: |
@@ -41,10 +41,12 @@ jobs:
             cd ${CHANGEFOLDER}
             VERSION=$(grep -w VERSION Dockerfile |awk -F":" '{print $2}')
             echo ${VERSION}
-            IMAGENAME=$(echo ${REPOSITORY}/${CHANGEFOLDER}:${VERSION})
+            IMAGENAME=$(echo pilgrima/${CHANGEFOLDER}:${VERSION})
             echo ${IMAGENAME}
             docker buildx build -t ${IMAGENAME} .
             docker push ${IMAGENAME}
+            docker tag ${IMAGENAME} $(echo pilgrima/${CHANGEFOLDER}:latest)
+            docker push $(echo pilgrima/${CHANGEFOLDER}:latest)
 
           done
           
