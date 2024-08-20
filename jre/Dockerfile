@@ -1,4 +1,5 @@
 FROM pilgrima/alpine-glibc:latest
+# VERSION:v1.8.0_401
 MAINTAINER pilgrima
 ADD jre1.8.tar.gz /usr/java/jdk/
 ENV JAVA_HOME /usr/java/jdk/jre1.8.0_401

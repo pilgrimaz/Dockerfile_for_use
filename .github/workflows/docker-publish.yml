@@ -36,7 +36,7 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
         run: |
           docker login -u ${USERNAME} -p ${PASSWORD}
-          for file in ${ALL_CHANGED_FILES}; do
+          for file in `echo ${ALL_CHANGED_FILES}|tr " " "\n" | sort |uniq`; do
             CHANGEFOLDER=$(echo ${file}|awk -F"/" '{print $1}')
             cd ${CHANGEFOLDER}
             VERSION=$(grep -w VERSION Dockerfile |awk -F":" '{print $2}')
