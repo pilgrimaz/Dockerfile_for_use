@@ -1,4 +1,4 @@
-FROM alpine:3.19.1
+FROM alpine:3.19.2
 # VERSION:glibc-2.35-r1
 LABEL author="pilgrima" version="alpine:3.19.1 glibc:2.35-r1"
 ENV GLIBC_VERSION 2.35-r1
